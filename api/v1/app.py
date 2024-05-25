@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-"""create app instance of Flask\
-        register the blueprint app_views to your Flask instance app"""
+""" create Flask instance"""
 
 from os import getenv
 from flask import Flask
