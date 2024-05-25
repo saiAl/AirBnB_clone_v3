@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" create Flask instance"""
+"""create Flask instance"""
 
 from os import getenv
 from flask import Flask, jsonify
@@ -12,6 +12,7 @@ app.register_blueprint(app_views)
 
 @app.errorhandler(404)
 def pageNotFound(exception):
+    """returns a JSON-formatted 404 status code response."""
     return jsonify({"error": "Not found"})
 
 
@@ -24,5 +25,6 @@ def teardown(exception):
 if __name__ == "__main__":
     host = getenv("HBNB_API_HOST", "0.0.0.0")
     port = getenv("HBNB_API_PORT", 5000)
+    debug = getenv("DEBUG", 0)
 
-    app.run(host, port, debug=True, threaded=True)
+    app.run(host, port, debug=debug, threaded=True)
