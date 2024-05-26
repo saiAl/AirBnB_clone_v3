@@ -2,7 +2,7 @@
 """create Flask instance"""
 
 from os import getenv
-from flask import Flask, jsonify
+from flask import Flask, jsonify, make_response
 from api.v1.views import app_views
 from models import storage
 
@@ -13,7 +13,8 @@ app.register_blueprint(app_views)
 @app.errorhandler(404)
 def pageNotFound(exception):
     """returns a JSON-formatted 404 status code response."""
-    return jsonify({"error": "Not found"})
+    response = jsonify({"error": "Not found"})
+    return make_response(response, 404)
 
 
 @app.teardown_appcontext
