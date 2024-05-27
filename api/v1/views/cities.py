@@ -12,11 +12,12 @@ from flask import jsonify, abort, request, make_response
                  strict_slashes=False)
 def all_cities(state_id):
     """ Retrieves the list of all City objects of a State"""
-    state = storage.get("State", state_id)
+    state = storage.get(State, state_id)
     if state is None:
-        abort(404)
+        return jsonify({"error": "Not found"}), 404
+
     all_cities = []
-    for city in storage.all("City").values():
+    for city in storage.all(City).values():
         if city.state_id == state_id:
             all_cities.append(city.to_dict())
     return jsonify(all_cities)
@@ -46,15 +47,20 @@ def delete_city(city_id):
                  strict_slashes=False)
 def new_city(state_id):
     """ Creates a city  """
-    state = storage.get("State", state_id)
+    state = storage.get(State, state_id)
     if state is None:
-        abort(404)
+        return jsonify({"error": "Not found"}), 404
+
     city = request.get_json()
     if city is None:
-        abort(400, "Not a JSON")
+        # abort(400, "Not a JSON")
+        return jsonify({"error": "Not a JSON"}), 400
+
     if "name" not in city:
-        abort(400, "Missing name")
+        return jsonify({"error": "Missing name"}), 400
+
     city = City(**city)
+    city.state_id = state_id
     city.save()
     return make_response(jsonify(city.to_dict()), 201)
 
