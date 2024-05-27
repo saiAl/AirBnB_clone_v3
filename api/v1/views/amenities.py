@@ -11,7 +11,7 @@ from flask import jsonify, abort, request, make_response
 def all_amenity():
     """ Retrieves the list of all Amenity objects"""
     all_amenities = []
-    for amenity in storage.all("Amenity").values():
+    for amenity in storage.all(Amenity).values():
         all_amenities.append(amenity.to_dict())
     return jsonify(all_amenities)
 
@@ -20,7 +20,7 @@ def all_amenity():
                  strict_slashes=False)
 def amenity(amenity_id):
     """ Retrieves an amenity object"""
-    amenity = storage.get("Amenity", amenity_id)
+    amenity = storage.get(Amenity, amenity_id)
     if amenity is None:
         abort(404)
     return jsonify(amenity.to_dict())
@@ -30,7 +30,7 @@ def amenity(amenity_id):
                  strict_slashes=False)
 def delete_amenity(amenity_id):
     """ Deletes an amenity object"""
-    amenity = storage.get("Amenity", amenity_id)
+    amenity = storage.get(Amenity, amenity_id)
     if state is None:
         abort(404)
     storage.delete(amenity)
@@ -41,7 +41,7 @@ def delete_amenity(amenity_id):
 @app_views.route('/amenities', methods=['POST'], strict_slashes=False)
 def new_Amenity():
     """ Creates an amenity  """
-    amenity = request.get_json()
+    amenity = request.get_json(silent=True)
     if amenity is None:
         abort(400, "Not a JSON")
     if "name" not in amenity:
@@ -55,12 +55,12 @@ def new_Amenity():
                  strict_slashes=False)
 def update_amenity(amenity_id):
     """ Updates an amenity  object """
-    amenity = storage.get("Amenity", amenity_id)
+    amenity = storage.get(Amenity, amenity_id)
     if amenity is None:
         abort(404)
-    update_amenity = request.get_json()
+    update_amenity = request.get_json(silent=True)
     if update_amenity is None:
-        abort(400, "Not a JSON")
+        return jsonify({"error": "Not a JSON"}), 400
     for key, value in update_amenity.items():
         if key not in ["id", "created_at", "updated_at"]:
             setattr(amenity, key, value)
