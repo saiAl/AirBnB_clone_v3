@@ -20,22 +20,21 @@ def all_stats():
 def state(state_id):
     """ Retrieves a State object"""
     state = storage.get("State", state_id)
-    if state:
-        return jsonify(state.to_dict())
-    else:
+    if state is None:
         abort(404)
+    return jsonify(state.to_dict())
 
 
-@app_views.route('/states/<state_id>', methods=['DELETE'])
+@app_views.route('/states/<state_id>', methods=['DELETE'],
+                 strict_slashes=False)
 def delete_state(state_id):
     """ Deletes a State object"""
     state = storage.get("State", state_id)
-    if state:
-        storage.delete(state)
-        storage.save()
-        return make_response(jsonify({}), 200)
-    else:
+    if state is None:
         abort(404)
+    storage.delete(state)
+    storage.save()
+    return make_response(jsonify({}), 200)
 
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
