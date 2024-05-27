@@ -51,7 +51,7 @@ def new_city(state_id):
     if state is None:
         return jsonify({"error": "Not found"}), 404
 
-    city = request.get_json()
+    city = request.get_json(silent=True)
     if city is None:
         return jsonify({"error": "Not a JSON"}), 400
 
@@ -72,9 +72,10 @@ def update_city(city_id):
     if city is None:
         abort(404)
 
-    updated_value = request.get_json()
+    updated_value = request.get_json(silent=True)
+
     if updated_value is None:
-        abort(400, "Not a JSON")
+        return jsonify({"error": "Not a JSON"}), 400
 
     for key, value in updated_value.items():
         if key not in ["id", "state_id", "created_at", "updated_at"]:
