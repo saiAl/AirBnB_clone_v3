@@ -49,16 +49,20 @@ def new_review(place_id):
     place = storage.get("Place", place_id)
     if place is None:
         abort(404)
-    review = request.get_json()
+
+    review = request.get_json(silent=True)
     if review is None:
-        abort(400, "Not a JSON")
+        return jsonify({"error": "Not a JSON"}), 400
+
     if "user_id" not in review:
         abort(400, "Missing user_id")
-    user = storage.get("User", review.user_id)
+    user = storage.get("User", review["user_id"])
+
     if user is None:
         abort(404)
-    if "text" not in place:
-        abort(400, "Missing text")
+    if "text" not in review:
+        return jsonify({"error": "Missing text"}), 400
+    review["place_id"] = place.id
     review = Review(**review)
     review.save()
     return make_response(jsonify(review.to_dict()), 201)
@@ -70,9 +74,9 @@ def update_review(review_id):
     review = storage.get("Review", review_id)
     if review is None:
         abort(404)
-    update_review = request.get_json()
+    update_review = request.get_json(silent=True)
     if update_review is None:
-        abort(400, "Not a JSON")
+        return jsonify({"error": "Not a JSON"}), 400
     for key, value in update_review.items():
         if key not in ["id", "user_id", "place_id", "created_at",
                        "updated_at"]:
